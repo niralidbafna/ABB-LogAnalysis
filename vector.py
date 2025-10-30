@@ -29,10 +29,11 @@ def update_vector_store():
     log_files = list(Path(log_folder).glob("*.log")) + list(Path(log_folder).glob("*.txt"))
     new_documents = []
     new_ids = []
-
+    count = 0
     for file_path in log_files:
         doc_id = str(file_path.name)  # use filename as unique ID
         if doc_id not in existing_ids:
+            count += 1
             content = file_path.read_text(encoding="utf-8", errors="ignore")
             doc = Document(
                 page_content=content,
@@ -41,6 +42,7 @@ def update_vector_store():
             )
             new_documents.append(doc)
             new_ids.append(doc_id)
+            print(count)
 
     if new_documents:
         vector_store.add_documents(documents=new_documents, ids=new_ids)
@@ -57,3 +59,5 @@ def retrieve_logs(query):
     update_vector_store()
     retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 5})
     return retriever.invoke(query)
+
+
