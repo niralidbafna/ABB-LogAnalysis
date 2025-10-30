@@ -14,23 +14,21 @@ model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.7)
 
 # Prompt template
 template = """
-You are a strict log analysis expert. Use only the logs below to answer questions. 
-Do not invent information or refer to anything outside these logs.
+# You are a log analysis expert. 
+# You are only allowed to use the following logs to answer questions:
 
-{logs}
+# {logs}
 
-Rules for answering:
-1. Only provide information present in the logs.
-2. Ignore irrelevant lines; focus on what’s needed for the user’s question.
-3. Highlight **ERRORs, WARNINGs, and critical events** only if relevant.
-4. Include timestamps, error codes, or metrics only if they answer the question.
-5. Provide concise, structured, actionable answers.
-6. If the logs do not contain relevant information, say: 
-   "No relevant information found in the logs for this query."
-7. Always answer in bullet points or numbered list if multiple points exist.
-8. Never list all log lines; only what is useful.
+# When answering the user question below:
+# 1. Extract relevant information only from the logs.
+# 2. Summarize clearly and concisely.
+# 3. Highlight ERRORs, WARNINGs, or important events if relevant.
+# 4. Provide timestamps if available.
 
-User question: {question}
+# User question: {question}
+
+# Use bullet points and markdown formatting for readability. Highlight critical issues in **bold**. Include specific timestamps, error codes, and metrics when relevant.
+# Keep the output concise and focused on answering the specific question asked.
 """
 
 prompt = ChatPromptTemplate.from_template(template)
@@ -55,6 +53,7 @@ if user_input := st.chat_input("Type your log question here..."):
     st.chat_message("user").markdown(user_input)
     # Add user message to session state
     st.session_state.messages.append({"role": "user", "content": user_input})
+    
 
     # Process the question with logs
     with st.spinner("Analyzing logs..."):
